@@ -182,11 +182,11 @@ try:
         try:
             # Get the mail count and drop it in the MQTT
             mc = get_mails(account)
-            mqttc.publish(MQTT_USPS_MAIL_TOPIC, str(mc), qos=0, retain=False)
+            mqttc.publish(MQTT_USPS_MAIL_TOPIC, str(mc), qos=0, retain=True)
 
             # Get the package count and drop it in the MQTT
             pc = package_count(account)
-            mqttc.publish(MQTT_USPS_PACKAGE_TOPIC, str(pc), qos=0, retain=False)
+            mqttc.publish(MQTT_USPS_PACKAGE_TOPIC, str(pc), qos=0, retain=True)
         except Exception as e:
             print_message ("Error occured while publishing messages to MQTT.")
             print_message (str(e))
