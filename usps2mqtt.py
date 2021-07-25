@@ -28,10 +28,10 @@ HOST = os.getenv("HOST")
 PORT = int(os.getenv("PORT"))
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
-folder   = 'inbox'
+FOLDER = os.getenv("FOLDER")
 
 GIF_FILE_NAME = "todays_mails.gif"
-GIF_MAKER_OPTIONS = '/usr/bin/convert  -delay 300 -loop 0 '
+GIF_MAKER_OPTIONS = os.getenv("GIF_MAKER_OPTIONS")
 IMAGE_OUTPUT_PATH = os.getenv("IMAGE_OUTPUT_PATH")
 
 # Login Method
@@ -50,10 +50,10 @@ def login():
 
 # Select folder inside the mailbox
 ###############################################################################
-def selectFolder(account, folder):
+def selectFolder(account, FOLDER):
     rv, mailboxes = account.list()
-    rv, data = account.select(folder)
-    print_message ("Selecting folder '{}'".format(folder))
+    rv, data = account.select(FOLDER)
+    print_message ("Selecting folder '{}'".format(FOLDER))
 
 # Creates GIF image based on the attachments in the inbox
 ###############################################################################
@@ -111,7 +111,8 @@ def get_mails(account):
 # Returns today in specific format
 ###############################################################################
 def get_formatted_date():
-    return datetime.datetime.today().strftime('%d-%b-%Y')
+    target = datetime.datetime.today() - datetime.timedelta(days=0)
+    return target.strftime('%d-%b-%Y')
 
 # gets packages count
 ###############################################################################
@@ -171,7 +172,7 @@ try:
 
         try:
             account = login()
-            selectFolder(account, folder)
+            selectFolder(account, FOLDER)
         except Exception as exx:
             print_message ("Error connecting logging into email server.")
             print_message (str(exx))
