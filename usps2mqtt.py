@@ -30,7 +30,7 @@ USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 FOLDER = os.getenv("FOLDER")
 
-GIF_FILE_NAME = "todays_mails.gif"
+GIF_FILE_NAME = os.getenv("GIF_FILE_NAME")
 GIF_MAKER_OPTIONS = os.getenv("GIF_MAKER_OPTIONS")
 IMAGE_OUTPUT_PATH = os.getenv("IMAGE_OUTPUT_PATH")
 
