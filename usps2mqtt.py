@@ -31,6 +31,7 @@ PASSWORD = os.getenv("PASSWORD")
 FOLDER = os.getenv("FOLDER")
 
 GIF_FILE_NAME = os.getenv("GIF_FILE_NAME")
+NO_MAIL_FILE_NAME = os.getenv("NO_MAIL_FILE_NAME")
 GIF_MAKER_OPTIONS = os.getenv("GIF_MAKER_OPTIONS")
 IMAGE_OUTPUT_PATH = os.getenv("IMAGE_OUTPUT_PATH")
 
@@ -177,29 +178,35 @@ try:
             print_message ("Error connecting logging into email server.")
             print_message (str(exx))
             sys.exit(1)
-        # Get the mail count and drop it in the MQTT
-        mc = get_mails(account)
-        mqttc.publish(MQTT_USPS_MAIL_TOPIC, str(mc), qos=0, retain=False)
 
-        # Get the package count and drop it in the MQTT
-        pc = package_count(account)
-        mqttc.publish(MQTT_USPS_PACKAGE_TOPIC, str(pc), qos=0, retain=False)
+        try:
+            # Get the mail count and drop it in the MQTT
+            mc = get_mails(account)
+            mqttc.publish(MQTT_USPS_MAIL_TOPIC, str(mc), qos=0, retain=False)
+
+            # Get the package count and drop it in the MQTT
+            pc = package_count(account)
+            mqttc.publish(MQTT_USPS_PACKAGE_TOPIC, str(pc), qos=0, retain=False)
+        except Exception as e:
+            print_message ("Error occured while publishing messages to MQTT.")
+            print_message (str(e))
+            sys.exit(1)
 
         # if there are no mails, make sure you delete the old file, 
         # so that the next day, you don't see yesterday's mails
         # when there are no mails, copy nomail.jpg as your default file
         if mc == 0:
             os.remove(IMAGE_OUTPUT_PATH + GIF_FILE_NAME)
-            copyfile("nomail.gif", IMAGE_OUTPUT_PATH + GIF_FILE_NAME)
+            copyfile(NO_MAIL_FILE_NAME, IMAGE_OUTPUT_PATH + GIF_FILE_NAME)
 
         # disconnect from MQTT
         mqttc.disconnect()
-        print_message ("Disconnected MQTT successfully. Will check your mails again in {} seconds.".format(str(SLEEP_TIME_IN_SECONDS)))
+        # print_message ("Disconnected MQTT successfully. Will check your mails again in {} seconds.".format(str(SLEEP_TIME_IN_SECONDS)))
 
         # sleep for 5 minutes before trying it again
         #time.sleep(SLEEP_TIME_IN_SECONDS)
         sys.exit(1)
 except Exception as e:
-    print_message ("Error occured while either processing email or publishing messages to MQTT.")
+    print_message ("Unspecified error occured.")
     print_message (str(e))
     sys.exit(1)
